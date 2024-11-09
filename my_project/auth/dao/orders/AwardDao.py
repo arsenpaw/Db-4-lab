@@ -1,7 +1,6 @@
 from typing import List, Optional
 from my_project.auth.dao.general_dao import GeneralDAO
-from my_project.auth.domain.orders import (Gender, Kindergarten, Group, Position, Award, Child, Employee, ChildGroupsHistory, ChildHistory, ChildKindergartens, EmployeeGroups, EmployeeHistory)
-
+from my_project.auth.domain.orders.Award import Award  # Ensure this is the correct path
 
 class AwardDAO(GeneralDAO):
     _domain_type = Award
