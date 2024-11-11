@@ -6,6 +6,9 @@ from my_project.auth.domain.orders.Employee import Employee
 class EmployeeController:
     _dao = EmployeeDAO()
 
+    def find_with_gender(self):
+        return self._dao.find_with_gender()
+
     def find_all(self) -> List[Employee]:
         return self._dao.find_all()
 

@@ -9,14 +9,14 @@ child_groups_history_bp = Blueprint('childGroupsHistory', __name__, url_prefix='
 @child_groups_history_bp.get('all')
 def get_all_child_groups_histories_and_all() -> Response:
     histories = child_groups_history_controller.find_all_with_related_data()
-    histories_dto = [history.put_into_large_dto() for history in histories]  # Using a method that includes joined data
+    histories_dto = [history.put_into_large_dto() for history in histories]
     return make_response(jsonify(histories_dto), HTTPStatus.OK)
 
 
 @child_groups_history_bp.get('')
 def get_all_child_groups_histories() -> Response:
     histories = child_groups_history_controller.find_all()
-    histories_dto = [history.put_into_large_dto() for history in histories]
+    histories_dto = [history.put_into_dto() for history in histories]
     return make_response(jsonify(histories_dto), HTTPStatus.OK)
 
 @child_groups_history_bp.post('')

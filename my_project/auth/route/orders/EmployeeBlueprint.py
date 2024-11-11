@@ -5,6 +5,14 @@ from my_project.auth.domain.orders.Employee import Employee
 
 employee_bp = Blueprint('employee', __name__, url_prefix='/employee')
 
+@employee_bp.get('all')
+def get_all_employees_with() -> Response:
+    employees = employee_controller.find_with_gender()
+    employees_dto = [employee.put_into_large_dto() for employee in employees]
+    return make_response(jsonify(employees_dto), HTTPStatus.OK)
+
+
+
 @employee_bp.get('')
 def get_all_employees() -> Response:
     employees = employee_controller.find_all()
