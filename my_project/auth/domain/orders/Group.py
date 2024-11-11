@@ -1,5 +1,8 @@
 from __future__ import annotations
 from typing import Dict, Any
+
+from sqlalchemy.orm import relationship
+
 from my_project import db
 from my_project.auth.domain.i_dto import IDto
 
@@ -9,6 +12,8 @@ class Group(db.Model, IDto):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     kindergarten_id = db.Column(db.Integer, db.ForeignKey('kindergarten.id'), nullable=False)
+
+    child_groups_history = relationship("ChildGroupsHistory", back_populates="group")
 
     def put_into_dto(self) -> Dict[str, Any]:
         return {"id": self.id, "name": self.name, "kindergarten_id": self.kindergarten_id}

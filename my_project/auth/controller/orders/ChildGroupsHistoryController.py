@@ -6,6 +6,9 @@ from my_project.auth.domain.orders.ChildGroupsHistory import ChildGroupsHistory
 class ChildGroupsHistoryController:
     _dao = ChildGroupsHistoryDAO()
 
+    def find_all_with_related_data(self):
+        return self._dao.find_all_with_related_data()
+
     def find_all(self) -> List[ChildGroupsHistory]:
         return self._dao.find_all()
 
