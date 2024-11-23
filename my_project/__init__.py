@@ -42,8 +42,25 @@ def create_app(app_config: Dict[str, Any], additional_config: Dict[str, Any]) ->
     _init_db(app)
     register_routes(app)
     _init_swagger(app)
+    _init_trigger(app)
 
     return app
+
+def _init_trigger(app: Flask) -> None:
+    with app.app_context():
+        # Your database or other app-dependent operations
+        db.session.execute('''
+        CREATE TRIGGER prevent_negative_pk
+        BEFORE INSERT ON employee
+        FOR EACH ROW
+        BEGIN
+            IF NEW.Id < 0 THEN
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Primary key cannot be negative';
+            END IF;
+        END;
+        ''')
+        db.session.commit()
 
 
 def _init_swagger(app: Flask) -> None:
