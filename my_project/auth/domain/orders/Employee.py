@@ -10,7 +10,7 @@ class Employee(db.Model, IDto):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255), nullable=False)
-    gender_id = db.Column(db.Integer, db.ForeignKey('gender.id', name="fk_employee_gender_id"), nullable=False)
+    gender_id = db.Column(db.Integer, nullable=False)
     kindergarten_id = db.Column(db.Integer, db.ForeignKey('kindergarten.id', name="fk_employee_kindergarten_id"),
                                 nullable=False)
     position_id = db.Column(db.Integer, db.ForeignKey('position.id', name="fk_employee_position_id"), nullable=False)
