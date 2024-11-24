@@ -5,6 +5,8 @@ apavelchak@gmail.com
 """
 
 import os
+from cgi import logfp
+from datetime import datetime
 from http import HTTPStatus
 import secrets
 from typing import Dict, Any
@@ -42,21 +44,86 @@ def create_app(app_config: Dict[str, Any], additional_config: Dict[str, Any]) ->
     _init_db(app)
     register_routes(app)
     _init_swagger(app)
+    _init_function(app)
+    _init_procedures(app)
     _init_trigger(app)
-
+    _init_employee_award(app,5,4)
+    _init_positions(app)
     return app
+
+
+def _init_positions(app: Flask):
+    with app.app_context():
+        for i in range(20,30):
+            db.session.execute(
+                """
+                INSERT IGNORE INTO position (id, title)
+                VALUES (:p_id, :p_titled)
+                """,
+                {'p_id': i, 'p_titled': f'Noname{i}'}
+            )
+        db.session.commit()
+
+
+def _init_employee_award(app: Flask, current_group_id: int,current_employee_id: int) -> None:
+    with app.app_context():
+        db.session.execute("CALL AddEmployeeGroup(:current_group_id, :current_employee_id)", {
+            'current_group_id': current_group_id,
+            'current_employee_id': current_employee_id
+        })
+        db.session.commit()
+
+
+def _init_procedures(app: Flask) -> None:
+    with app.app_context():
+        db.session.execute('''
+            DROP PROCEDURE IF EXISTS AddEmployeeGroup;
+                CREATE PROCEDURE AddEmployeeGroup(
+                IN p_current_group_id INT,
+                IN p_current_employee_id INT
+            )
+            BEGIN
+                INSERT IGNORE  INTO employee_groups (current_group_id, current_employee_id)
+                VALUES (p_current_group_id, p_current_employee_id);
+            END;
+          ''')
+        db.session.commit()
+
+def _init_function(app: Flask) -> None:
+    with app.app_context():
+        db.session.execute('''
+        DROP FUNCTION IF EXISTS YoungestChild;
+        CREATE FUNCTION YoungestChild() 
+        RETURNS DATE
+        DETERMINISTIC
+        BEGIN
+            DECLARE youngest_date DATE;
+            SELECT MIN(admission_date) INTO youngest_date 
+            FROM test.child_history;
+            RETURN youngest_date;
+        END;
+        ''')
+        db.session.commit()
+        result = db.session.execute('SELECT YoungestChild()').scalar()
+        print(f"The youngest child has {result} admision date")
+
 
 def _init_trigger(app: Flask) -> None:
     with app.app_context():
         # Your database or other app-dependent operations
         db.session.execute('''
-        CREATE TRIGGER prevent_negative_pk
+        DROP TRIGGER IF EXISTS trigger_gender_id;
+        CREATE TRIGGER trigger_gender_id
         BEFORE INSERT ON employee
         FOR EACH ROW
         BEGIN
             IF NEW.Id < 0 THEN
                 SIGNAL SQLSTATE '45000'
                 SET MESSAGE_TEXT = 'Primary key cannot be negative';
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM gender WHERE gender.Id = NEW.gender_id) THEN
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'No such gender exist';
             END IF;
         END;
         ''')
