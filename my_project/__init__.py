@@ -127,7 +127,7 @@ def _init_function(app: Flask) -> None:
 
 def _init_trigger(app: Flask) -> None:
     with app.app_context():
-        #  as constraint
+        #  as fk constraint
         db.session.execute('''
         DROP TRIGGER IF EXISTS trigger_gender_id;
         CREATE TRIGGER trigger_gender_id
@@ -144,6 +144,7 @@ def _init_trigger(app: Flask) -> None:
             END IF;
         END;
         ''')
+        #update
         db.session.execute('''
                DROP TRIGGER IF EXISTS trigger_gender_id_up;
                CREATE TRIGGER trigger_gender_id_up
@@ -160,7 +161,7 @@ def _init_trigger(app: Flask) -> None:
                    END IF;
                END;
                ''')
-        # as double zero limiter
+        #  double zero limiter
         db.session.execute('''
                DROP TRIGGER IF EXISTS double_zerro_trigger;
                CREATE TRIGGER double_zerro_trigger
@@ -173,19 +174,51 @@ def _init_trigger(app: Flask) -> None:
                    END IF;
                END;
                ''')
-        # max 6 chars
+        # update
         db.session.execute('''
-                       DROP TRIGGER IF EXISTS award_limiter;
-                       CREATE TRIGGER award_limiter
-                       BEFORE INSERT ON award 
-                       FOR EACH ROW
-                       BEGIN
-                           IF CHAR_LENGTH(NEW.description) < 6 THEN
-                               SIGNAL SQLSTATE '45000'
-                               SET MESSAGE_TEXT = 'Thanos sad that award description worth more that 6 characters';
-                           END IF;
-                       END;
+               DROP TRIGGER IF EXISTS double_zerro_trigger_upd;
+               CREATE TRIGGER double_zerro_trigger_upd
+               BEFORE UPDATE ON gender 
+               FOR EACH ROW
+               BEGIN
+                   IF RIGHT(NEW.Id,2) = '00' THEN
+                       SIGNAL SQLSTATE '45000'
+                       SET MESSAGE_TEXT = 'Identifier cannot have double zero due to the rule of universe';
+                   END IF;
+               END;
+               ''')
+
+        # max 6 chars and min 3  create
+        db.session.execute('''
+                        DROP TRIGGER IF EXISTS award_limiter;
+                        CREATE TRIGGER award_limiter
+                        BEFORE INSERT ON award
+                        FOR EACH ROW
+                        BEGIN
+                            IF CHAR_LENGTH(NEW.description) <= 3 OR CHAR_LENGTH(NEW.description) > 6 THEN 
+                                SIGNAL SQLSTATE '45000'
+                                SET MESSAGE_TEXT = 'Tanos said that award description must be at least 6 characters.';
+                            END IF;
+                        END;
+
                        ''')
+        # update
+        db.session.execute('''
+                        DROP TRIGGER IF EXISTS award_limiter_upd;
+                        CREATE TRIGGER award_limiter_upd
+                        BEFORE UPDATE ON award
+                        FOR EACH ROW
+                        BEGIN
+                            IF CHAR_LENGTH(NEW.description) <= 3 OR CHAR_LENGTH(NEW.description) > 6 THEN 
+                                SIGNAL SQLSTATE '45000'
+                                SET MESSAGE_TEXT = 'Tanos said that award description must be at least 6 characters.';
+                            END IF;
+                        END;
+
+                       ''')
+
+
+        # forbid delete
         db.session.execute('''
                               DROP TRIGGER IF EXISTS on_kindergarten_remove;
                               CREATE TRIGGER on_kindergarten_remove
