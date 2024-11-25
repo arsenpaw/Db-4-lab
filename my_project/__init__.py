@@ -5,7 +5,6 @@ apavelchak@gmail.com
 """
 
 import os
-from cgi import logfp
 from datetime import datetime
 from http import HTTPStatus
 import secrets
@@ -14,6 +13,7 @@ from typing import Dict, Any
 from flask import Flask
 from flask_restx import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 from sqlalchemy_utils import database_exists, create_database
 
 from my_project.auth.route import register_routes
@@ -49,7 +49,16 @@ def create_app(app_config: Dict[str, Any], additional_config: Dict[str, Any]) ->
     _init_trigger(app)
     _init_employee_award(app,5,4)
     _init_positions(app)
+    _do_cursor_task(app)
     return app
+
+
+def _do_cursor_task(app:Flask):
+    with open("cursor.sql", "r") as file:
+        sql_script = file.read()
+    with app.app_context() as connection:
+        db.session.execute(text(sql_script))
+        print("SQL script executed successfully.")
 
 
 def _init_positions(app: Flask):
@@ -110,7 +119,7 @@ def _init_function(app: Flask) -> None:
 
 def _init_trigger(app: Flask) -> None:
     with app.app_context():
-        # Your database or other app-dependent operations
+        #  as constraint
         db.session.execute('''
         DROP TRIGGER IF EXISTS trigger_gender_id;
         CREATE TRIGGER trigger_gender_id
@@ -127,6 +136,43 @@ def _init_trigger(app: Flask) -> None:
             END IF;
         END;
         ''')
+        # as double zero limiter
+        db.session.execute('''
+               DROP TRIGGER IF EXISTS double_zerro_trigger;
+               CREATE TRIGGER double_zerro_trigger
+               BEFORE INSERT ON gender 
+               FOR EACH ROW
+               BEGIN
+                   IF RIGHT(NEW.Id,2) = '00' THEN
+                       SIGNAL SQLSTATE '45000'
+                       SET MESSAGE_TEXT = 'Identifier cannot have double zero due to the rule of universe';
+                   END IF;
+               END;
+               ''')
+        # max 6 chars
+        db.session.execute('''
+                       DROP TRIGGER IF EXISTS award_limiter;
+                       CREATE TRIGGER award_limiter
+                       BEFORE INSERT ON award 
+                       FOR EACH ROW
+                       BEGIN
+                           IF CHAR_LENGTH(NEW.description) < 6 THEN
+                               SIGNAL SQLSTATE '45000'
+                               SET MESSAGE_TEXT = 'Thanos sad that award description worth more that 6 characters';
+                           END IF;
+                       END;
+                       ''')
+        db.session.execute('''
+                              DROP TRIGGER IF EXISTS on_kindergarten_remove;
+                              CREATE TRIGGER on_kindergarten_remove
+                              BEFORE DELETE ON kindergarten 
+                              FOR EACH ROW
+                              BEGIN                              
+                                  SIGNAL SQLSTATE '45000'
+                                  SET MESSAGE_TEXT = 'Removing kindergarden is not the jedi way';
+                              END;
+                              ''')
+
         db.session.commit()
 
 
