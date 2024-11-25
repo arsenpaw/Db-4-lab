@@ -15,7 +15,6 @@ class Employee(db.Model, IDto):
                                 nullable=False)
     position_id = db.Column(db.Integer, db.ForeignKey('position.id', name="fk_employee_position_id"), nullable=False)
 
-    gender = db.relationship('Gender', back_populates="employee")
 
     def put_into_large_dto(self) -> Dict[str, Any]:
         return {

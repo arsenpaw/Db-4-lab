@@ -4,11 +4,9 @@ BEGIN
     DECLARE table_name VARCHAR(128);
     DECLARE done INT DEFAULT 0;
 
-    -- Cursor to fetch distinct values for table names
     DECLARE table_cursor CURSOR FOR SELECT DISTINCT id FROM award;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
-    -- Open cursor
     OPEN table_cursor;
 
     read_loop: LOOP
@@ -17,16 +15,12 @@ BEGIN
             LEAVE read_loop;
         END IF;
 
-        -- Generate a unique table name with timestamp
         SET @dynamic_table_name = CONCAT(table_name, '_', DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'));
 
-        -- Generate a random number of columns (1 to 9)
         SET @num_columns = FLOOR(1 + RAND() * 9);
 
-        -- Initialize SQL for creating the table
         SET @create_table_sql = CONCAT('CREATE TABLE ', @dynamic_table_name, ' (');
 
-        -- Add random columns to the table
         SET @col_index = 1;
         WHILE @col_index <= @num_columns DO
             SET @col_name = CONCAT('Column_', @col_index);
@@ -48,12 +42,10 @@ BEGIN
 
         SET @create_table_sql = CONCAT(@create_table_sql, ');');
 
-        -- Execute the SQL to create the table
         PREPARE stmt FROM @create_table_sql;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
     END LOOP;
 
-    -- Close the cursor
     CLOSE table_cursor;
 END;

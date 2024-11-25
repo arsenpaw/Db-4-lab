@@ -9,7 +9,6 @@ class Gender(db.Model, IDto):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
 
-    employee = db.relationship("Employee", back_populates="gender")
 
     def put_into_dto(self) -> Dict[str, Any]:
         return {"id": self.id, "name": self.name}
