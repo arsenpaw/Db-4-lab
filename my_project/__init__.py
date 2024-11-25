@@ -144,6 +144,22 @@ def _init_trigger(app: Flask) -> None:
             END IF;
         END;
         ''')
+        db.session.execute('''
+               DROP TRIGGER IF EXISTS trigger_gender_id_up;
+               CREATE TRIGGER trigger_gender_id_up
+               BEFORE UPDATE ON employee
+               FOR EACH ROW
+               BEGIN
+                   IF NEW.Id < 0 THEN
+                       SIGNAL SQLSTATE '45000'
+                       SET MESSAGE_TEXT = 'Primary key cannot be negative';
+                   END IF;
+                   IF NOT EXISTS (SELECT 1 FROM gender WHERE gender.Id = NEW.gender_id) THEN
+                       SIGNAL SQLSTATE '45000'
+                       SET MESSAGE_TEXT = 'No such gender exist';
+                   END IF;
+               END;
+               ''')
         # as double zero limiter
         db.session.execute('''
                DROP TRIGGER IF EXISTS double_zerro_trigger;
