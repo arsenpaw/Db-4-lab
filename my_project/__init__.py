@@ -112,8 +112,16 @@ def _init_function(app: Flask) -> None:
             RETURN youngest_date;
         END;
         ''')
+        db.session.execute('''
+           DROP PROCEDURE IF EXISTS ExecSelect;
+            CREATE PROCEDURE ExecSelect()
+            BEGIN
+                SELECT YoungestChild() AS AdmissionDate;
+            END;
+        ''')
+
         db.session.commit()
-        result = db.session.execute('SELECT YoungestChild()').scalar()
+        result = db.session.execute('CALL ExecSelect() ').scalar()
         print(f"The youngest child has {result} admision date")
 
 
