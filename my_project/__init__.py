@@ -66,11 +66,21 @@ def _init_positions(app: Flask):
         for i in range(20,30):
             db.session.execute(
                 """
-                INSERT IGNORE INTO position (id, title)
-                VALUES (:p_id, :p_titled)
-                """,
-                {'p_id': i, 'p_titled': f'Noname{i}'}
+                DROP PROCEDURE IF EXISTS insert_positions;
+                CREATE PROCEDURE insert_positions()
+                BEGIN
+                    DECLARE i INT DEFAULT 20;
+                
+                    WHILE i < 30 DO
+                        INSERT IGNORE INTO position (id, title)
+                        VALUES (i, CONCAT('Noname', i));
+                        SET i = i + 1;
+                    END WHILE;
+                END;
+                """
             )
+
+        db.session.execute("CALL insert_positions();")
         db.session.commit()
 
 
