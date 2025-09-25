@@ -7,12 +7,12 @@ development:
   DEBUG: True
 #  SQLALCHEMY_DATABASE_URI: 'sqlite://'
 #  SQLALCHEMY_DATABASE_URI: 'sqlite:///device_db.sqlite'
-  SQLALCHEMY_DATABASE_URI: 'mysql://root2:AXProduct2024@localhost:1401/test'
+  SQLALCHEMY_DATABASE_URI: 'mysql://su:Aboba1234!@deolanosdblab1.mysql.database.azure.com/test'
 
 production:
   <<: *common
-  SQLALCHEMY_DATABASE_URI: 'mysql://root:AXProduct2024@localhost/test'
+  SQLALCHEMY_DATABASE_URI: 'mysql://su:Aboba1234!@deolanosdblab1.mysql.database.azure.com/test'
 
 ADDITIONAL_CONFIG:
-  MYSQL_ROOT_USER: root
-  MYSQL_ROOT_PASSWORD: AXProduct2024
+  MYSQL_ROOT_USER: su
+  MYSQL_ROOT_PASSWORD: Aboba1234!
