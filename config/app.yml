@@ -1,18 +1,13 @@
 COMMON: &common
   DEBUG: False
   SQLALCHEMY_TRACK_MODIFICATIONS: False
-
 development:
-  <<: *common
   DEBUG: True
-#  SQLALCHEMY_DATABASE_URI: 'sqlite://'
-#  SQLALCHEMY_DATABASE_URI: 'sqlite:///device_db.sqlite'
-  SQLALCHEMY_DATABASE_URI: 'mysql://su:Aboba1234!@deolanosdblab1.mysql.database.azure.com/test'
+  SQLALCHEMY_DATABASE_URI: ${SQLALCHEMY_DATABASE_URI}
 
 production:
-  <<: *common
-  SQLALCHEMY_DATABASE_URI: 'mysql://su:Aboba1234!@deolanosdblab1.mysql.database.azure.com/test'
+ SQLALCHEMY_DATABASE_URI: ${SQLALCHEMY_DATABASE_URI}
 
 ADDITIONAL_CONFIG:
-  MYSQL_ROOT_USER: su
-  MYSQL_ROOT_PASSWORD: Aboba1234!
+  MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
+  MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}

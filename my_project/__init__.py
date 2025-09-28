@@ -10,6 +10,9 @@ from datetime import datetime
 from http import HTTPStatus
 import secrets
 from typing import Dict, Any
+from urllib.parse import quote_plus
+
+from dotenv import load_dotenv
 from flasgger import Swagger
 from flask import Flask, jsonify
 from flask_restx import Api, Resource
@@ -332,13 +335,41 @@ def _init_db(app: Flask) -> None:
 
 def _process_input_config(app_config: Dict[str, Any], additional_config: Dict[str, Any]) -> None:
     """
-    Processes input configuration
-    :param app_config: Flask configuration
-    :param additional_config: additional configuration
+    Resolve DB connection string from environment first, then from a URI template.
+    Expects app_config["SQLALCHEMY_DATABASE_URI"] to be either a full DSN or a template
+    like:
+      - "mysql+pymysql://{user}:{password}@host:3306/db?ssl_mode=REQUIRED"
+      - "mysql+pymysql://{}:{}@host:3306/db?ssl_mode=REQUIRED"
     """
-    # Get root username and password
-    root_user = os.getenv(MYSQL_ROOT_USER, additional_config[MYSQL_ROOT_USER])
-    root_password = os.getenv(MYSQL_ROOT_PASSWORD, additional_config[MYSQL_ROOT_PASSWORD])
-    # Set root username and password in app_config
-    app_config[SQLALCHEMY_DATABASE_URI] = app_config[SQLALCHEMY_DATABASE_URI].format(root_user, root_password)
-    pass
+    load_dotenv()
+    # 1) Full DSN via env wins
+    conn = os.getenv(SQLALCHEMY_DATABASE_URI)
+    if conn:
+        app_config["SQLALCHEMY_DATABASE_URI"] = conn
+        return
+
+    # 2) Build from template using env → additional_config
+    user = os.getenv(MYSQL_ROOT_USER, str(additional_config.get("MYSQL_ROOT_USER", "")))
+    pwd  = os.getenv(MYSQL_ROOT_PASSWORD, str(additional_config.get("MYSQL_ROOT_PASSWORD", "")))
+
+    template = app_config.get("SQLALCHEMY_DATABASE_URI", "")
+    if not template:
+        raise ValueError("SQLALCHEMY_DATABASE_URI is missing and no CONNECTION_STRING provided in env.")
+
+    # Named placeholders
+    if "{user}" in template or "{password}" in template:
+        app_config["SQLALCHEMY_DATABASE_URI"] = template.format(
+            user=user,
+            password=quote_plus(pwd),  # encodes specials like ! @ # etc.
+        )
+        return
+
+    # Positional placeholders
+    if "{}" in template:
+        app_config["SQLALCHEMY_DATABASE_URI"] = template.format(
+            user, quote_plus(pwd)
+        )
+        return
+
+    # No placeholders: leave as-is
+    app_config["SQLALCHEMY_DATABASE_URI"] = template

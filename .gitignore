@@ -64,3 +64,5 @@ coverage.xml
 # PyBuilder
 target/
 
+.env
+.env
