@@ -1,22 +1,29 @@
-# syntax=docker/dockerfile:1
-FROM python:3.11-slim
+# Use Python 3.10 slim image
+FROM python:3.10-slim
 
+# Set working directory
 WORKDIR /app
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 
-# ✅ Deps required to build mysqlclient wheels
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    pkg-config \
+# Install system dependencies for MySQL
+RUN apt-get update && apt-get install -y \
+    gcc \
     default-libmysqlclient-dev \
-    build-essential \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy requirements and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy project files
 COPY . .
 
-# Flask dev server (embedded)
-ENV FLASK_APP=app.py FLASK_RUN_HOST=0.0.0.0 FLASK_RUN_PORT=5000
-EXPOSE 5000
-CMD ["flask", "run"]
+# Expose port
+EXPOSE 1401
+
+# Set environment variables
+ENV FLASK_ENV=production
+ENV PYTHONPATH=/app
+
+# Run the application
+CMD ["python", "app.py"]
