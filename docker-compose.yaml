@@ -1,0 +1,11 @@
+services:
+  web:
+    image: vafelka/lab1:latest
+    ports:
+      - "1401:80"
+    restart: always
+    pull_policy: always
+    environment:
+      - MYSQL_ROOT_USER=${MYSQL_ROOT_USER}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - SQLALCHEMY_DATABASE_URI=${CONNECTION_STRING}
