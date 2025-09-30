@@ -9,3 +9,15 @@ services:
       - MYSQL_ROOT_USER=${MYSQL_ROOT_USER}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI}
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    # check every 60s, clean old images, also handle stopped containers, only watch 'web'
+    command: >
+      --interval 60
+      --cleanup
+      --include-stopped
+      --revive-stopped
