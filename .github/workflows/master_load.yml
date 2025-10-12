@@ -44,4 +44,6 @@ jobs:
         publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }} # Remove publish-profile to use Azure RBAC
         sku: flexconsumption
         remote-build: true
+        cm-do-build-during-deployment: true
+
 
