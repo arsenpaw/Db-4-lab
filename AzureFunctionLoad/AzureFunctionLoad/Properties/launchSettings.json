@@ -1,8 +1,10 @@
 {
   "profiles": {
     "AzureFunctionLoad": {
-      "commandName": "Project",
-      "commandLineArgs": "--port 7120"
+      "commandName": "Executable",
+      "executablePath": "func",
+      "commandLineArgs": "host start --port 7120",
+      "workingDirectory": "$(TargetDir)"
     },
     "Container (Dockerfile)": {
       "commandName": "Docker",
