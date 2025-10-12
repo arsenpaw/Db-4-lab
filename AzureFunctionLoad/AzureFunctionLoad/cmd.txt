@@ -1,0 +1,5 @@
+func azure functionapp publish loadrest --dotnet-isolated
+
+func start 
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
