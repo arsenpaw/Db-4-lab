@@ -2,7 +2,10 @@ name: Build and Push to ACR
 
 on:
   push:
-    branches: master
+    branches:
+      - master
+    paths-ignore:
+      - 'AzureFunctionLoad/**'
 permissions:
   id-token: write
   contents: read
