@@ -2,8 +2,10 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches:
-      - master  # Adjust to the branch you want to trigger the workflow
+   branches:
+      - master
+   paths-ignore:
+      - 'AzureFunctionLoad/**' # Adjust to the branch you want to trigger the workflow
 
 jobs:
   build-and-push:
