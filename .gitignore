@@ -67,3 +67,4 @@ target/
 .env
 .env
 /AzureFunctionLoad/.vs
+Device-Test/host.json
