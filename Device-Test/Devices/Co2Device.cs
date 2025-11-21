@@ -8,7 +8,9 @@ public class Co2Telemetry
 {
     public double Co2Level { get; set; }
     public DateTime CollectedOn { get; set; }
-    
+
+    public Guid DeviceId { get; set; }
+    public string DeviceType { get; protected set; } = "Co2";
     public string Location { get; set; } = string.Empty;
     public string AirQualityCategory { get; set; } = default!;
 }
@@ -16,7 +18,9 @@ public class Co2Telemetry
 public class Co2Device(IOptionsMonitor<SimulatorConfig> config) : AbstractDevice<Co2Telemetry>
 {
     public override string ConnectionString =>  config.CurrentValue.Co2Endpoint;
-    
+
+    public override string DeviceType { get; protected set; } = "Co2";
+
     public override Task<Co2Telemetry> GetTelemetry()
     { 
         Random rnd = new();
@@ -38,7 +42,8 @@ public class Co2Device(IOptionsMonitor<SimulatorConfig> config) : AbstractDevice
             Co2Level = co2,
             CollectedOn = DateTime.UtcNow,
             Location = $"{latitude};{longitude}",
-            AirQualityCategory = category
+            AirQualityCategory = category,
+            DeviceId = this.DeviceId
         };
 
         Console.WriteLine(

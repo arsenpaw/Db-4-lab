@@ -1,14 +1,9 @@
 {
   "profiles": {
     "Consumer": {
-      "commandName": "Executable",
-      "executablePath": "func",
-      "commandLineArgs": "host start --port 7061",
-      "workingDirectory": ".",
-      "launchBrowser": false,
-      "environmentVariables": {
-        "AZURE_FUNCTIONS_ENVIRONMENT": "Development"
-      }
+      "commandName": "Project",
+      "commandLineArgs": "--port 7263",
+      "launchBrowser": false
     }
   }
 }

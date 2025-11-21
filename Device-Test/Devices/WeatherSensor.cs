@@ -7,6 +7,8 @@ public class WeatherTelemetry
 {
     public double Temperature { get; set; }
     
+    public Guid DeviceId { get; set; }
+    public  string DeviceType { get; set; } = "Weather";
     public string Location { get; set; } = string.Empty;
     public DateTime CollectedOn { get; set; }
     public double Humidity { get; set; }
@@ -15,6 +17,7 @@ public class WeatherSensor(IOptionsMonitor<SimulatorConfig> config) : AbstractDe
 {
     private IOptionsMonitor<SimulatorConfig> _simulatorConfig = config;
 
+    public override string DeviceType { get; protected set; } = "Weather";
     public override string ConnectionString => config.CurrentValue.WeatherEndpoint;
     public override Task<WeatherTelemetry> GetTelemetry()
     {
@@ -28,7 +31,8 @@ public class WeatherSensor(IOptionsMonitor<SimulatorConfig> config) : AbstractDe
             Temperature = Math.Round(15 + rnd.NextDouble() * 10, 2),
             Humidity = Math.Round(40 + rnd.NextDouble() * 40, 2),
             Location = $"{latitude};{longitude}",
-            CollectedOn = DateTime.UtcNow
+            CollectedOn = DateTime.UtcNow,
+            DeviceId = this.DeviceId
         };
          
         Console.WriteLine(
