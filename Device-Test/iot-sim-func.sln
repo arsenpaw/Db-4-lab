@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11109.219 d18.0-oob
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iot-sim-func", "iot-sim-func.csproj", "{C676E032-B6CA-9B12-FD97-A97BE6BE507F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C676E032-B6CA-9B12-FD97-A97BE6BE507F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C676E032-B6CA-9B12-FD97-A97BE6BE507F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C676E032-B6CA-9B12-FD97-A97BE6BE507F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C676E032-B6CA-9B12-FD97-A97BE6BE507F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {96352E49-3FBE-4EE7-B339-9F2843E76B01}
+	EndGlobalSection
+EndGlobal
