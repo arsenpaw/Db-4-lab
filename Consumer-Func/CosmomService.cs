@@ -14,7 +14,7 @@ public class CosmosService
 
     private readonly ILogger _logger;
 
-    public CosmosService(CosmosClient cosmosClient, ILogger logger)
+    public CosmosService(CosmosClient cosmosClient, ILogger<CosmosService> logger)
     {
         var databaseId = "DeviceTelemetry";
         var containerId = "DeviceTelemetry";
